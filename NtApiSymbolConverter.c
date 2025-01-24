@@ -4,27 +4,36 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#define numberOfRecords 31428
+#define LongestStringInFile 514
 
 typedef struct 
 {
     char Scope[9];
     char Address[18];
-    char Name[800];
+    char Name[LongestStringInFile];
 } FunctionMetadata;
 
 int ReadDataFromFile(FunctionMetadata **libraryMetaData, char *fileName);
 int WriteDataToCSV(FunctionMetadata **libraryMetaData, size_t arrayLength, char *fileName);
 char *LTrim(char *stringToTrim, size_t length);
 
+void QuickSort(FunctionMetadata **libraryMetaData, size_t start, size_t end);
+size_t Partition(FunctionMetadata **libraryMetaData, size_t start, size_t end);
+
 void BubbleSort( FunctionMetadata **libraryMetaData, size_t arrayLength);
 void Swap(FunctionMetadata **first, FunctionMetadata **second);
 
-void QuickSort(FunctionMetadata **array, size_t start, size_t end);
-size_t Partition(FunctionMetadata **array, size_t start, size_t end);
-
 int main(int argc, char* argv[])
 {
+    size_t defaultNumberOfRecords = 31428;
+    char *endptr;
+    size_t numberOfRecords = argc > 1 ? strtoull(argv[1], &endptr, 0) : defaultNumberOfRecords;
+    if (errno == ERANGE || ( argc > 1 && argv[1][0] == '-') || endptr == argv[1])
+    {
+        printf("Invalid paramter - Number of records. Using Default Value, %zu\n", defaultNumberOfRecords);
+        numberOfRecords = defaultNumberOfRecords;
+    }
+
     FunctionMetadata **libraryMetaData = malloc(numberOfRecords * sizeof(FunctionMetadata)); // too big have to use the heap
 
     if(!ReadDataFromFile(libraryMetaData, "NtApiSymbols.txt"))
@@ -56,7 +65,7 @@ int ReadDataFromFile(FunctionMetadata **libraryMetaData, char *fileName)
     if(inputFile == NULL)
         return 0;
 
-    char buffer[514]; // longest string in the file
+    char buffer[LongestStringInFile]; 
     for(size_t i = 0; fgets(buffer, sizeof buffer, inputFile) != NULL; i++)
     {
         FunctionMetadata *metaData = malloc(sizeof(FunctionMetadata));
@@ -73,7 +82,7 @@ int ReadDataFromFile(FunctionMetadata **libraryMetaData, char *fileName)
         char *tmp = strchr(buffer, '!'); // returns a pointer to the first occurance of '!'
         if(tmp != NULL)
         {
-            tmp++; // remove the ! and get rid of the leading spaces.
+            tmp++; // remove the !
             tmp = LTrim(tmp, strlen(tmp)); // trim leading spaces;
             strncpy(metaData->Name, tmp, strlen(tmp)-1); // -1 because we want to get rid of \n
             libraryMetaData[i] = metaData;
@@ -116,37 +125,37 @@ char *LTrim(char *stringToTrim, size_t length)
     return stringToTrim;
 }
 
-void QuickSort(FunctionMetadata **array, size_t start, size_t end)
+void QuickSort(FunctionMetadata **libraryMetaData, size_t start, size_t end)
 {
     if(end <= start) return;
 
-    size_t pivot = Partition(array, start, end);
-    QuickSort(array, start, pivot-1);
-    QuickSort(array, pivot+1, end);
+    size_t pivot = Partition(libraryMetaData, start, end);
+    QuickSort(libraryMetaData, start, pivot-1);
+    QuickSort(libraryMetaData, pivot+1, end);
 }
 
-size_t Partition(FunctionMetadata **array, size_t start, size_t end)
+size_t Partition(FunctionMetadata **libraryMetaData, size_t start, size_t end)
 {
-    FunctionMetadata *pivot = array[end];
+    FunctionMetadata *pivot = libraryMetaData[end];
 
     size_t i = start - 1;
     for(size_t j = start; j < end; j++)
     {
-        if(strcmp(array[j]->Name, pivot->Name) < 0) // if str1 < str2  or if j < pivot
+        if(strcmp(libraryMetaData[j]->Name, pivot->Name) < 0) // if str1 < str2  or if j < pivot
         {
             i++;
-            FunctionMetadata *tmp = array[i];
-            array[i] = array[j];
-            array[j] = tmp;
+            FunctionMetadata *tmp = libraryMetaData[i];
+            libraryMetaData[i] = libraryMetaData[j];
+            libraryMetaData[j] = tmp;
         }
     }
 
     i++; // increase i by 1 because thats our new pivot index
     
     // move pivot to the new pivot index
-    FunctionMetadata *tmp = array[i];
-    array[i] = pivot;
-    array[end] = tmp;
+    FunctionMetadata *tmp = libraryMetaData[i];
+    libraryMetaData[i] = pivot;
+    libraryMetaData[end] = tmp;
 
     return i;
 }
