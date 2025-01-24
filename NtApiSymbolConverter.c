@@ -5,6 +5,9 @@
 #include <stdbool.h>
 
 #define LongestStringInFile 514
+#define DefaultNumberOfRecords 31428
+#define InputFileName "NtApiSymbols.txt"
+#define OutputFileName "NtApiSymbolsCSV.csv"
 
 typedef struct 
 {
@@ -25,18 +28,17 @@ void Swap(FunctionMetadata **first, FunctionMetadata **second);
 
 int main(int argc, char* argv[])
 {
-    size_t defaultNumberOfRecords = 31428;
     char *endptr;
-    size_t numberOfRecords = argc > 1 ? strtoull(argv[1], &endptr, 0) : defaultNumberOfRecords;
+    size_t numberOfRecords = argc > 1 ? strtoull(argv[1], &endptr, 0) : DefaultNumberOfRecords;
     if (errno == ERANGE || ( argc > 1 && argv[1][0] == '-') || endptr == argv[1])
     {
-        printf("Invalid paramter - Number of records. Using Default Value, %zu\n", defaultNumberOfRecords);
-        numberOfRecords = defaultNumberOfRecords;
+        printf("Invalid paramter - Number of records. Using Default Value, %zu\n", DefaultNumberOfRecords);
+        numberOfRecords = DefaultNumberOfRecords;
     }
 
     FunctionMetadata **libraryMetaData = malloc(numberOfRecords * sizeof(FunctionMetadata)); // too big have to use the heap
 
-    if(!ReadDataFromFile(libraryMetaData, "NtApiSymbols.txt"))
+    if(!ReadDataFromFile(libraryMetaData, InputFileName))
     {
         puts("Failed to open the input file");
         free(libraryMetaData);
@@ -47,7 +49,7 @@ int main(int argc, char* argv[])
     QuickSort(libraryMetaData, 0, numberOfRecords-1); // O(nlogn) average case
     //BubbleSort(libraryMetaData, numberOfRecords-1); // O(n^2)
 
-    if(!WriteDataToCSV(libraryMetaData, numberOfRecords, "NtApiSymbolsCSV.csv"))
+    if(!WriteDataToCSV(libraryMetaData, numberOfRecords, OutputFileName))
     {
         puts("Failed to open the output file");
         free(libraryMetaData);
