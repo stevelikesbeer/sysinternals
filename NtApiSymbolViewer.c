@@ -138,6 +138,8 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
         {
             printf("Invalid Input Data. Name missing on line %zu \n", i);
             fclose(inputFile);
+            free(metaData);
+            metaData = NULL;
             return 0;
         }
         strcpy(metaData->Name,name);
@@ -147,6 +149,8 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
         {
             printf("Invalid Input Data. Scope missing on line %zu \n", i);
             fclose(inputFile);
+            free(metaData);
+            metaData = NULL;
             return 0;
         }
         strcpy(metaData->Scope, scope);
@@ -156,6 +160,8 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
         {
             printf("Invalid Input Data. Address missing on line %zu \n", i);
             fclose(inputFile);
+            free(metaData);
+            metaData = NULL;
             return 0;
         }
         strcpy(metaData->Address,address);
