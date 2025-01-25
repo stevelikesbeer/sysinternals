@@ -68,6 +68,11 @@ int main(int argc, char *argv[])
             strcpy(userCommand, "Iop");
             PrintLibraryFunctionsWithPrefix(libraryMetaData, userCommand, strlen(userCommand), numberOfRecords);
         }
+        else if (strcmp(userCommand, "4") == 0)
+        {
+            strcpy(userCommand, "Mi");
+            PrintLibraryFunctionsWithPrefix(libraryMetaData, userCommand, strlen(userCommand), numberOfRecords);
+        }
         else // specific prefix requested, entered in userCommand
         {
             if(userCommandLength == 0) 
@@ -169,6 +174,7 @@ void PrintOptions()
     puts("    1    - Print All Names");
     puts("    2    - (Inbv) Boot Video Driver - Called from Kernal Mode, Not Documented or Exported");
     puts("    3    - (Iop) Internal I/O Manager Support Functions - Defined Global Symbols but not exported");
+    puts("    4    - (Mi) Internal Memory Management Functions");
     puts("-------- Specific prefixes --------");
     puts("    Alpc  - Advanced Local Procedure Calls");
     puts("    Cc    - Common Cache");
