@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
         if(strcmp(userCommand, "quit") == 0 || strcmp(userCommand, "exit") == 0)
         {
-            continue;
+            break;
         }
         else if (strcmp(userCommand, "1") == 0)
         {
