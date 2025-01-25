@@ -36,8 +36,10 @@ int main(int argc, char* argv[])
         numberOfRecords = DefaultNumberOfRecords;
     }
 
-    // I think this is wrong because I should be allocating space for FunctionMetaDataPointers
-    FunctionMetadata **libraryMetaData = malloc(numberOfRecords * sizeof(FunctionMetadata)); // too big have to use the heap
+    // Apparently it's a lot safer (and easier for maintenance) to set the size to *variableName rather than Type
+    // so that when you change the variable type, you don't have to update the malloc command
+    // or count the stars
+    FunctionMetadata **libraryMetaData = malloc(numberOfRecords * (sizeof *libraryMetaData)); // too big have to use the heap
 
     if(!ReadDataFromFile(libraryMetaData, InputFileName))
     {
@@ -81,14 +83,16 @@ int ReadDataFromFile(FunctionMetadata **libraryMetaData, char *fileName)
     char buffer[LongestStringInFile]; 
     for(size_t i = 0; fgets(buffer, sizeof buffer, inputFile) != NULL; i++)
     {
-        FunctionMetadata *metaData = malloc(sizeof(FunctionMetadata));
+        FunctionMetadata *metaData = malloc(sizeof *metaData);
 
-        char scope[9]; 
-        strncpy(scope, buffer, 8);
-        if(strcmp(scope, "prv func"))
+        if(strncmp(buffer, "prv func", 8))
+        {
             strcpy(metaData->Scope, "Public");
+        }
         else
+        {
             strcpy(metaData->Scope, "Private");
+        }
 
         strncpy(metaData->Address, buffer + 11, 17);
 
@@ -115,7 +119,7 @@ int WriteDataToCSV(FunctionMetadata **libraryMetaData, size_t arrayLength, char 
 
     for(size_t i = 0; i < arrayLength; i++)
     {
-        fprintf(outputFile, "%s, %s, %s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
+        fprintf(outputFile, "%s@%s@%s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
     }
 
     fclose(outputFile);

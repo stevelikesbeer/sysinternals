@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         numberOfRecords = DefaultNumberOfRecords;
     }
 
-    FunctionMetadata **libraryMetaData = malloc(sizeof(FunctionMetadata) * numberOfRecords);
+    FunctionMetadata **libraryMetaData = malloc(numberOfRecords * (sizeof *libraryMetaData));
 
     if(!ReadInputData(libraryMetaData, InputFileName))
     {
@@ -126,7 +126,7 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
     size_t attributeLength = 0;
     for(size_t i = 0; fgets(buffer, LongestStringInFile, inputFile); i++)
     {
-        FunctionMetadata *metaData = malloc(sizeof(FunctionMetadata));
+        FunctionMetadata *metaData = malloc(sizeof *metaData);
         buffer[strcspn(buffer, "\n")] = '\0';
         char *name = strtok(buffer, "@");
         if(name == NULL)
