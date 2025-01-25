@@ -52,11 +52,21 @@ int main(int argc, char* argv[])
     if(!WriteDataToCSV(libraryMetaData, numberOfRecords, OutputFileName))
     {
         puts("Failed to open the output file");
+        for(size_t i = 0; i < numberOfRecords; i++)
+        {
+            free(libraryMetaData[i]);
+            libraryMetaData[i] = NULL;
+        }
         free(libraryMetaData);
         libraryMetaData = NULL;
         return EXIT_FAILURE;
     }
 
+    for(size_t i = 0; i < numberOfRecords; i++)
+    {
+        free(libraryMetaData[i]);
+        libraryMetaData[i] = NULL;
+    }
     free(libraryMetaData);
     return EXIT_SUCCESS;
 }
