@@ -6,6 +6,7 @@
 #define LongestStringInFile 514
 #define DefaultNumberOfRecords 31428
 #define InputFileName "NtApiSymbolsCSV.csv"
+#define MaxUserCommandLength 30
 
 typedef struct 
 {
@@ -16,9 +17,8 @@ typedef struct
 
 int ReadInputData(FunctionMetadata **libraryMetaData, char *fileLocation);
 void PrintOptions();
-void GetUserCommand(char *userCommand, size_t *userCommandLength);
-
-void PrintLibraryFunctionsWithPrefix(FunctionMetadata **libraryMetaData, char userCommand[30], size_t userCommandLength, size_t numberOfRecords);
+void GetUserCommand(char userCommand[MaxUserCommandLength], size_t *userCommandLength);
+void PrintLibraryFunctionsWithPrefix(FunctionMetadata **libraryMetaData, char userCommand[MaxUserCommandLength], size_t userCommandLength, size_t numberOfRecords);
 
 int main(int argc, char *argv[])
 {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    char userCommand[30];
+    char userCommand[MaxUserCommandLength];
     size_t userCommandLength;
     while(strcmp(userCommand, "quit") != 0 && strcmp(userCommand, "exit") != 0)
     {
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-void PrintLibraryFunctionsWithPrefix(FunctionMetadata **libraryMetaData, char userCommand[30], size_t userCommandLength, size_t numberOfRecords)
+void PrintLibraryFunctionsWithPrefix(FunctionMetadata **libraryMetaData, char userCommand[MaxUserCommandLength], size_t userCommandLength, size_t numberOfRecords)
 {
     bool found = false;
     for (size_t i = 0; i < numberOfRecords; i++)
@@ -210,10 +210,10 @@ void PrintOptions()
     puts("    `exit` to quit");
 }
 
-void GetUserCommand(char *userCommand, size_t *userCommandLength)
+void GetUserCommand(char userCommand[MaxUserCommandLength], size_t *userCommandLength)
 {
     printf("> ");
-    fgets(userCommand, 30, stdin);
+    fgets(userCommand, MaxUserCommandLength, stdin);
     *userCommandLength = strlen(userCommand)-1;
     userCommand[*userCommandLength] = '\0';
 

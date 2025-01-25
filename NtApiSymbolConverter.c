@@ -75,7 +75,7 @@ int ReadDataFromFile(FunctionMetadata **libraryMetaData, char *fileName)
     for(size_t i = 0; fgets(buffer, sizeof buffer, inputFile) != NULL; i++)
     {
         FunctionMetadata *metaData = malloc(sizeof *metaData);
-
+        buffer[strcspn(buffer, "\n")] = '\0';
         if(strncmp(buffer, "prv func", 8))
         {
             strcpy(metaData->Scope, "Public");
@@ -86,13 +86,15 @@ int ReadDataFromFile(FunctionMetadata **libraryMetaData, char *fileName)
         }
 
         strncpy(metaData->Address, buffer + 11, 17);
+        // in strncpy if there are no null terminated character within n characters read, its copy is also not null terminated.
+        metaData->Address[17] = '\0'; 
 
         char *tmp = strchr(buffer, '!'); // returns a pointer to the first occurance of '!'
         if(tmp != NULL)
         {
             tmp++; // remove the !
             tmp = LTrim(tmp, strlen(tmp)); // trim leading spaces;
-            strncpy(metaData->Name, tmp, strlen(tmp)-1); // -1 because we want to get rid of \n
+            strncpy(metaData->Name, tmp, strlen(tmp)); // -1 because we want to get rid of \n
             libraryMetaData[i] = metaData;
         }
     }
