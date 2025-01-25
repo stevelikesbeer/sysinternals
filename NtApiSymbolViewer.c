@@ -18,6 +18,8 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileLocation);
 void PrintOptions();
 void GetUserCommand(char *userCommand, size_t *userCommandLength);
 
+void PrintLibraryFunctionsWithPrefix(FunctionMetadata **libraryMetaData, char userCommand[30], size_t userCommandLength, size_t numberOfRecords);
+
 int main(int argc, char *argv[])
 {
     char *endptr;
@@ -53,18 +55,20 @@ int main(int argc, char *argv[])
         {
             for(size_t i = 0; i < numberOfRecords; i++)
             {
-                printf("%s\n", libraryMetaData[i]->Name);
+                printf("%s, %s, %s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
             }
         }
         else if (strcmp(userCommand, "2") == 0)
         {
-            
+            strcpy(userCommand, "Inbv");
+            PrintLibraryFunctionsWithPrefix(libraryMetaData, userCommand, strlen(userCommand), numberOfRecords);
         }
         else if (strcmp(userCommand, "3") == 0)
         {
-            
+            strcpy(userCommand, "Iop");
+            PrintLibraryFunctionsWithPrefix(libraryMetaData, userCommand, strlen(userCommand), numberOfRecords);
         }
-        else // specific prefix requested
+        else // specific prefix requested, entered in userCommand
         {
             if(userCommandLength == 0) 
             {
@@ -73,29 +77,10 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            bool found = false;
-            for(size_t i = 0; i < numberOfRecords; i++)
-            {
-                if(strncmp(userCommand, libraryMetaData[i]->Name, userCommandLength) == 0)
-                {
-                    if((strcmp(userCommand, "Io") == 0) && libraryMetaData[i]->Name[2] == 'p') // make sure we don't include Iop commands when searching for Io commands
-                    {
-                        continue;
-                    }
-
-                    printf("%s, %s, %s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
-                    found = true;
-                } 
-            }
-
-            if(!found)
-            {
-                puts("No records found");
-            }
-
-            puts("\nPress enter to continue or type `exit` to quit");
-            GetUserCommand(userCommand, &userCommandLength);
+            PrintLibraryFunctionsWithPrefix(libraryMetaData, userCommand, userCommandLength, numberOfRecords);
         }
+        puts("\nPress enter to continue or type `exit` to quit");
+        GetUserCommand(userCommand, &userCommandLength);
     }
 
     for(size_t i = 0; i < numberOfRecords; i++)
@@ -106,6 +91,29 @@ int main(int argc, char *argv[])
     free(libraryMetaData);
 
     return EXIT_SUCCESS;
+}
+
+void PrintLibraryFunctionsWithPrefix(FunctionMetadata **libraryMetaData, char userCommand[30], size_t userCommandLength, size_t numberOfRecords)
+{
+    bool found = false;
+    for (size_t i = 0; i < numberOfRecords; i++)
+    {
+        if (strncmp(userCommand, libraryMetaData[i]->Name, userCommandLength) == 0)
+        {
+            if ((strcmp(userCommand, "Io") == 0) && libraryMetaData[i]->Name[2] == 'p') // make sure we don't include Iop commands when searching for Io commands
+            {
+                continue;
+            }
+
+            printf("%s, %s, %s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
+            found = true;
+        }
+    }
+
+    if (!found)
+    {
+        puts("No records found");
+    }
 }
 
 int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
@@ -204,6 +212,7 @@ void PrintOptions()
 
 void GetUserCommand(char *userCommand, size_t *userCommandLength)
 {
+    printf("> ");
     fgets(userCommand, 30, stdin);
     *userCommandLength = strlen(userCommand)-1;
     userCommand[*userCommandLength] = '\0';
