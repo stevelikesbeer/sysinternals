@@ -26,7 +26,9 @@ size_t Partition(FunctionMetadata **libraryMetaData, size_t start, size_t end);
 void BubbleSort( FunctionMetadata **libraryMetaData, size_t arrayLength);
 void Swap(FunctionMetadata **first, FunctionMetadata **second);
 
-int main(int argc, char* argv[])
+void *FreeLibraryMetaData(FunctionMetadata **libraryMetaData, size_t numberOfRecords);
+
+int main(int argc, char *argv[])
 {
     char *endptr;
     size_t numberOfRecords = argc > 1 ? strtoull(argv[1], &endptr, 0) : DefaultNumberOfRecords;
@@ -55,22 +57,11 @@ int main(int argc, char* argv[])
     if(!WriteDataToCSV(libraryMetaData, numberOfRecords, OutputFileName))
     {
         puts("Failed to open the output file");
-        for(size_t i = 0; i < numberOfRecords; i++)
-        {
-            free(libraryMetaData[i]);
-            libraryMetaData[i] = NULL;
-        }
-        free(libraryMetaData);
-        libraryMetaData = NULL;
+        libraryMetaData = FreeLibraryMetaData(libraryMetaData, numberOfRecords);;
         return EXIT_FAILURE;
     }
 
-    for(size_t i = 0; i < numberOfRecords; i++)
-    {
-        free(libraryMetaData[i]);
-        libraryMetaData[i] = NULL;
-    }
-    free(libraryMetaData);
+    libraryMetaData = FreeLibraryMetaData(libraryMetaData, numberOfRecords);
     return EXIT_SUCCESS;
 }
 
@@ -175,6 +166,19 @@ size_t Partition(FunctionMetadata **libraryMetaData, size_t start, size_t end)
     libraryMetaData[end] = tmp;
 
     return i;
+}
+
+void *FreeLibraryMetaData(FunctionMetadata **libraryMetaData, size_t numberOfRecords)
+{
+    for (size_t i = 0; i < numberOfRecords; i++)
+    {
+        free(libraryMetaData[i]);
+        libraryMetaData[i] = NULL;
+    }
+
+    free(libraryMetaData);
+
+    return NULL;
 }
 
 // wow this is so much slower than quicksort, by orders of magnitude. It takes like 20 seconds to run this and only 1 for quicksort.
