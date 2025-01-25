@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
         numberOfRecords = DefaultNumberOfRecords;
     }
 
+    // I think this is wrong because I should be allocating space for FunctionMetaDataPointers
     FunctionMetadata **libraryMetaData = malloc(numberOfRecords * sizeof(FunctionMetadata)); // too big have to use the heap
 
     if(!ReadDataFromFile(libraryMetaData, InputFileName))
