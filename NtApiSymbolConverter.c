@@ -7,7 +7,7 @@
 #define LongestStringInFile 514
 #define DefaultNumberOfRecords 31428
 #define InputFileName "NtApiSymbols.txt"
-#define OutputFileName "NtApiSymbolsCSV.csv"
+#define OutputFileName "NtApiSymbolsTSV.csv"
 
 typedef struct 
 {
@@ -112,7 +112,7 @@ int WriteDataToCSV(FunctionMetadata **libraryMetaData, size_t arrayLength, char 
 
     for(size_t i = 0; i < arrayLength; i++)
     {
-        fprintf(outputFile, "%s@%s@%s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
+        fprintf(outputFile, "%s\t%s\t%s\n", libraryMetaData[i]->Name, libraryMetaData[i]->Scope, libraryMetaData[i]->Address);
     }
 
     fclose(outputFile);

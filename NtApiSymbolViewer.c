@@ -5,7 +5,7 @@
 
 #define LongestStringInFile 514
 #define DefaultNumberOfRecords 31428
-#define InputFileName "NtApiSymbolsCSV.csv"
+#define InputFileName "NtApiSymbolsTSV.csv"
 #define MaxUserCommandLength 30
 
 typedef struct 
@@ -133,7 +133,7 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
     {
         FunctionMetadata *metaData = malloc(sizeof *metaData);
         buffer[strcspn(buffer, "\n")] = '\0';
-        char *name = strtok(buffer, "@");
+        char *name = strtok(buffer, "\t");
         if(name == NULL)
         {
             printf("Invalid Input Data. Name missing on line %zu \n", i);
@@ -144,7 +144,7 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
         }
         strcpy(metaData->Name,name);
 
-        char *scope = strtok(NULL, "@");
+        char *scope = strtok(NULL, "\t");
         if(scope == NULL)
         {
             printf("Invalid Input Data. Scope missing on line %zu \n", i);
@@ -155,7 +155,7 @@ int ReadInputData(FunctionMetadata **libraryMetaData, char *fileName)
         }
         strcpy(metaData->Scope, scope);
 
-        char *address = strtok(NULL, "@");
+        char *address = strtok(NULL, "\t");
         if(address == NULL)
         {
             printf("Invalid Input Data. Address missing on line %zu \n", i);
